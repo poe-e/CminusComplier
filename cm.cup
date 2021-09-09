@@ -1,0 +1,324 @@
+/*
+  Created by: Fei Song
+  File Name: tiny.cup
+  To Build: java java_cup.Main < tiny.cup
+*/
+   
+   
+/* ----------------------Preliminary Declarations Section--------------------*/
+   
+/* Import the class java_cup.runtime.*  */
+//import java_cup.runtime.*;
+import absyn.*;
+   
+/* Parser code to change the way the parser reports errors (include
+   line and column number of the error). */
+parser code {:
+    
+    /* Change the method report_error so it will display the line and
+       column of where the error occurred in the input as well as the
+       reason for the error which is passed into the method in the
+       String 'message'. */
+    public void report_error(String message, Object info) {
+       CM.errors = true;
+        /* Create a StringBuffer called 'm' with the string 'Error' in it. */
+        StringBuffer m = new StringBuffer("Error");
+   
+        /* Check if the information passed to the method is the same
+           type as the type java_cup.runtime.Symbol. */
+        if (info instanceof java_cup.runtime.Symbol) {
+            /* Declare a java_cup.runtime.Symbol object 's' with the
+               information in the object info that is being typecasted
+               as a java_cup.runtime.Symbol object. */
+            java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+   
+            /* Check if the line number in the input is greater or
+               equal to zero. */
+            if (s.left >= 0) {                
+                /* Add to the end of the StringBuffer error message
+                   the line number of the error in the input. */
+                m.append(" in line "+(s.left+1));   
+                /* Check if the column number in the input is greater
+                   or equal to zero. */
+                if (s.right >= 0)                    
+                    /* Add to the end of the StringBuffer error message
+                       the column number of the error in the input. */
+                    m.append(", column "+(s.right+1));
+            }
+        }
+   
+        /* Add to the end of the StringBuffer error message created in
+           this method the message that was passed into this method. */
+        m.append(" : "+message);
+   
+        /* Print the contents of the StringBuffer 'm', which contains
+           an error message, out on a line. */
+        System.err.println(m);
+    }
+   
+    /* Change the method report_fatal_error so when it reports a fatal
+       error it will display the line and column number of where the
+       fatal error occurred in the input as well as the reason for the
+       fatal error which is passed into the method in the object
+       'message' and then exit.*/
+    public void report_fatal_error(String message, Object info) {
+        report_error(message, info);
+        System.exit(1);
+    }
+
+:};
+   
+   
+/* ------------Declaration of Terminals and Non Terminals Section----------- */
+
+terminal IF, ELSE, INT, RETURN, VOID, WHILE;
+terminal ASSIGN, EQ, NEQ, LT, LTEQ, GT, GTEQ, PLUS, MINUS, TIMES, LPAREN, RPAREN, LSQUARE, RSQUARE, LCUR, RCUR, OVER, SEMI, COMMA;
+terminal String ID, NUM;
+terminal ERROR;
+   
+non terminal DecList program;
+non terminal DecList declaration_list;
+non terminal Dec declaration, fun_declaration;
+non terminal VarDecList local_declarations, param_list;
+non terminal VarDec var_declaration, param;
+non terminal Exp expression_statement, expression, factor, statement, simple_exp, additive_exp, call;
+non terminal Exp CompoundExp;
+non terminal NameTy type_specifier;
+non terminal Var var;
+non terminal ExpList arg_list, statement_list, args;
+
+/*The order of precedence is from bottom to top*/
+
+
+precedence nonassoc LTEQ, GTEQ, NEQ, LT, GT, LPAREN, RPAREN, EQ, NUM, ASSIGN,
+                        INT, VOID, IF, WHILE, RETURN, SEMI, ID, RCUR, LCUR, error;
+precedence right ASSIGN;
+precedence left PLUS, MINUS;
+precedence left TIMES, OVER;
+precedence left ELSE;
+
+
+/* ----------------------------Grammar Section-------------------- */
+
+start with program;
+
+
+program ::= declaration_list:dl
+                  {: RESULT = dl; :}
+              ;
+declaration_list ::= declaration_list:dl declaration:d
+                  {: DecList decs = dl;
+                     while(decs.tail != null)
+                        decs = decs.tail;
+                     decs.tail = new DecList(d, null);
+                     RESULT = dl;
+                  :}
+                  | declaration:d 
+                     {: RESULT = new DecList(d, null); 
+                     :}
+                  ;
+
+declaration    ::= var_declaration:vd 
+                  {: RESULT = vd; :}
+               |  fun_declaration:fd 
+                  {: RESULT = fd; :}
+               ;
+var_declaration ::= type_specifier:ts ID:i SEMI
+                  {: RESULT = new SimpleDec(tsleft, tsright, ts, i); :}
+               |  type_specifier:ts ID:i LSQUARE NUM:n RSQUARE SEMI
+                  {: IntExp intE = new IntExp(tsleft, tsright, n);
+                     RESULT = new ArrayDec(tsleft, tsright, ts, i, intE); :}
+               |  type_specifier:ts ID:i LSQUARE error:e RSQUARE SEMI
+                  {: report_error("invalid array declaration", e); 
+                     IntExp intE = new IntExp(eleft, eright, "invalid");
+                     RESULT = new ArrayDec(eleft, eright, new NameTy(eleft, eright, NameTy.INT), i, intE); :}
+               |  error:e ID:i LSQUARE NUM:n RSQUARE SEMI
+                  {: report_error("unrecognized type", e); 
+                     IntExp intE = new IntExp(eleft, eright, n);
+                     RESULT = new ArrayDec(eleft, eright, new NameTy(eleft, eright, NameTy.INT), i, intE); :}
+               | error:e ID:i SEMI 
+                  {: report_error("unrecognized type", e); RESULT = new SimpleDec(eleft, eright, new NameTy(eleft, eright, NameTy.INT), i); :}
+               |  type_specifier:ts ID:i error:e
+                     {: report_error("expected ';'",e); RESULT = null; :}
+                  ;
+type_specifier ::= INT:i
+                  {: RESULT = new NameTy(ileft, iright, NameTy.INT); :}
+               |  VOID:v
+                  {: RESULT = new NameTy(vleft, vright, NameTy.VOID); :}
+                ;
+fun_declaration ::= type_specifier:ts ID:func_name LPAREN param_list:pl RPAREN CompoundExp:cExp
+                  {: RESULT = new FunctionDec(tsleft, tsright, ts, func_name, pl, cExp); :}
+               |  type_specifier:ts ID:func_name LPAREN VOID RPAREN CompoundExp:cExp
+                  {: RESULT = new FunctionDec(tsleft, tsright, ts, func_name, null, cExp); :}
+               | type_specifier:ts ID:func_name LPAREN RPAREN CompoundExp:cExp
+                  {: RESULT = new FunctionDec(tsleft, tsright, ts, func_name, null, cExp); :}
+               | error:e ID:func_name LPAREN param_list:pl RPAREN CompoundExp:cExp
+                  {: report_error("Invalid function declaration",e); RESULT = new FunctionDec(eleft, eright, new NameTy(eleft, eright, NameTy.VOID), func_name, pl, cExp); :}
+               | error:e ID:func_name LPAREN VOID RPAREN CompoundExp:cExp
+                  {: report_error("Invalid function declaration",e); RESULT = new FunctionDec(eleft, eright, new NameTy(eleft, eright, NameTy.VOID), func_name, null, cExp); :}
+               | error:e ID:func_name LPAREN RPAREN CompoundExp:cExp
+                  {: report_error("Invalid function declaration",e); RESULT = new FunctionDec(eleft, eright, new NameTy(eleft, eright, NameTy.VOID), func_name, null, cExp); :}
+               ;
+param_list ::= param_list:pl COMMA param:p
+               {: 
+                  VarDecList parm = pl; 
+                  while(parm.tail != null)
+                     parm = parm.tail;
+                  parm.tail = new VarDecList(p, null);
+                  RESULT = pl;
+               :}
+               |  param:p
+                  {: RESULT = new VarDecList(p, null); :}
+               | error:e
+                  {: report_error("Invalid syntax parameter list", e); :}
+               ;
+param ::= type_specifier:ts ID:i 
+            {: RESULT = new SimpleDec(tsleft, tsright, ts, i); :}
+         |  type_specifier:ts ID:i LSQUARE RSQUARE
+            {: RESULT = new ArrayDec(tsleft, tsright, ts, i, null); :}
+
+         |  error:e ID:i 
+            {: report_error("Invalid parameter type", e); RESULT = new SimpleDec(eleft, eright, new NameTy(eleft, eright, NameTy.INT) , i); :}
+         |  error:e ID:i LSQUARE RSQUARE
+            {:report_error("Invalid parameter type", e); RESULT = new ArrayDec(eleft, eright, new NameTy(eleft, eright, NameTy.INT), i, null); :}
+         ;
+CompoundExp ::= LCUR local_declarations:ld statement_list:sl RCUR
+               {: RESULT = new CompoundExp(ldleft, ldright, ld, sl); :}
+               | LCUR local_declarations:ld RCUR
+                  {: RESULT = new CompoundExp(ldleft, ldright, ld, null); :}
+               | LCUR statement_list:sl RCUR
+                  {: RESULT = new CompoundExp(slleft, slright, null, sl); :}
+               | LCUR:c RCUR
+                  {: RESULT = new CompoundExp(cleft, cright, null, null); :}
+               ;
+local_declarations ::= local_declarations:ld var_declaration:vd
+                     {:
+                     VarDecList vdlist = ld;
+                        while(vdlist.tail != null){
+                           vdlist = vdlist.tail;
+                        }
+                        vdlist.tail = new VarDecList(vd, null);
+                        RESULT = ld;
+                     :}
+                     | var_declaration:vd
+                        {: RESULT = new VarDecList(vd, null); :}
+              /*       |
+                        {: RESULT = null; :}
+                */     ;
+statement_list ::= statement_list:sl statement:s
+                     {: 
+                        ExpList state = sl;
+                           while(state.tail != null)
+                              state = state.tail;
+                           state.tail = new ExpList(s, null);
+                           RESULT = sl;
+                     :}
+                     | statement:s
+                        {: RESULT = new ExpList(s, null);:}
+                    /* |  
+                        {: RESULT = null; :}
+                     */;
+statement ::= expression_statement:e 
+            {: RESULT = e; :}
+            | CompoundExp:cExp
+               {: RESULT = cExp; :}
+            | WHILE LPAREN simple_exp:e RPAREN statement:s
+               {: RESULT = new WhileExp(eleft, eright, e, s); :}
+            | WHILE LPAREN error:e RPAREN statement:s
+               {: report_error("invalid while loop condition",e); RESULT = null; :}
+            | IF:if1 LPAREN simple_exp:exp1 RPAREN statement:state1
+               {: RESULT = new IfExp(if1left, if1right, exp1, state1, null); :}
+            |  IF:if1 LPAREN error:e RPAREN statement:state1
+               {: report_error("Invalid if statement", e); RESULT = null; :}
+            |  IF:if2 LPAREN simple_exp:exp2 RPAREN statement:state1 ELSE statement:state2
+               {: RESULT = new IfExp(if2left, if2right, exp2, state1, state2); :}
+            |  IF:if2 LPAREN error:e RPAREN statement:state1 ELSE statement:state2
+               {: report_error("Invalid if statement", e); RESULT = null; :}
+            |  RETURN simple_exp:return_exp SEMI
+               {: 
+                  RESULT = new ReturnExp(return_expleft, return_expright, return_exp); :}
+            | RETURN:r SEMI
+               {: RESULT = new ReturnExp(rleft, rright, null); :}
+            |  RETURN:r error:e
+               {: report_error("expected ';'",e); RESULT = new ErrorExp(rleft, rright); :}
+            ;
+expression_statement ::= expression:e SEMI
+                        {: RESULT = e; :}
+                        |  SEMI:s
+                           {: RESULT = new NilExp(sleft, sright); :}
+                        |  expression:e error:er
+                           {: report_error("expected ';'", e);
+                              RESULT = new ErrorExp(eleft, eright); :}
+                        ;
+expression ::= var:v ASSIGN expression:e
+                  {: RESULT = new AssignExp(vleft, vright, v, e); :}
+               |  simple_exp:s
+                  {: RESULT = s; :}
+               |  var:v ASSIGN error:e 
+                  {: report_error("';' expected", e);
+                     RESULT = new ErrorExp(vleft, vright);
+                  :}
+               ;
+simple_exp ::= additive_exp:e1 EQ additive_exp:e2
+               {: RESULT = new OpExp(e1left, e1right, e1, OpExp.EQ, e2); :}
+            |  additive_exp:e1 LT additive_exp:e2
+               {: RESULT = new OpExp(e1left, e1right, e1, OpExp.LT, e2); :}
+            |  additive_exp:e1 GT additive_exp:e2
+               {: RESULT = new OpExp (e1left, e1right, e1, OpExp.GT, e2); :}
+            |  additive_exp:e1 LTEQ additive_exp:e2
+               {: RESULT = new OpExp(e1left, e1right, e1, OpExp.LTEQ, e2); :}
+            |  additive_exp:e1 GTEQ additive_exp:e2
+               {: RESULT = new OpExp(e1left, e1right, e1, OpExp.GTEQ, e2); :}
+            |  additive_exp:e1 NEQ additive_exp:e2
+               {: RESULT = new OpExp(e1left, e1right, e1, OpExp.NEQ, e2); :}
+            |  additive_exp:e 
+               {: RESULT = e; :}
+            ;
+additive_exp ::= additive_exp:e1 PLUS additive_exp:add
+                  {:  RESULT = new OpExp(e1left, e1right, e1, OpExp.PLUS, add); :}
+               |  additive_exp:e1 MINUS additive_exp:add
+                  {: RESULT = new OpExp(e1left, e1right, e1, OpExp.MINUS, add); :}
+               |  additive_exp:e1 TIMES additive_exp:add
+                  {: RESULT = new OpExp(e1left, e1right, e1, OpExp.TIMES, add); :}
+               |  additive_exp:e1 OVER additive_exp:add
+                  {: RESULT = new OpExp(e1left, e1right, e1, OpExp.OVER, add); :}
+               |  factor:f
+                  {: RESULT = f; :}
+               ;
+factor ::= LPAREN expression:e RPAREN
+            {: RESULT = e; :}
+        | var:v 
+            {: RESULT = new VarExp(vleft, vright, v); :}
+         |  call:cExp
+            {: RESULT = cExp; :}
+         |  NUM:n 
+            {: RESULT = new IntExp(nleft, nright, n); :}
+         ;
+call ::= ID:i LPAREN args:a RPAREN
+         {: RESULT = new CallExp(ileft, iright, i, a); :}
+         /*tried to do () errors but it just messing with the ; error*/
+         ;
+var ::= ID:i 
+         {: RESULT = new SimpleVar(ileft,iright, i); :}
+      |  ID:i2 LSQUARE expression:e RSQUARE
+         {: RESULT = new IndexVar(i2left, i2right, i2 ,e); :}
+      ;
+args ::= arg_list:a 
+         {: RESULT = a; :}
+      |  
+         {: RESULT = null; :}
+      ;
+arg_list ::= arg_list:a_list COMMA expression:e
+               {: ExpList args = a_list;
+                  while(args.tail != null)
+                     args = args.tail;
+                  args.tail = new ExpList(e, null);
+                  RESULT = a_list;
+               :}
+               | expression:e
+                  {: RESULT = new ExpList(e, null); :}
+               | error:e
+                  {: report_error("Invalid syntax in argument list", e);
+                  RESULT = new ExpList(new ErrorExp(eleft, eright), null) ; 
+                  :}
+               ;

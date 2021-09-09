@@ -1,0 +1,23 @@
+/*
+This function takes a start and end input.
+Then prints from start to end.
+Shows input/output function, while loop, opexp
+*/
+
+
+
+
+
+void main(){
+    int start; int end; int current;
+
+    start = input();
+    end = input();
+    current = start;
+
+    while(start <= end){
+        output(current);
+        current = current + 1;
+        start = start + 1;
+    } 
+}

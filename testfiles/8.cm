@@ -1,0 +1,21 @@
+/**
+  Expects return variable, none found
+  Expects no return for void function, return x found
+  Index Variable of VOID not compatiable with int array
+**/
+
+int test(){
+
+  return;
+}
+
+void test2(){
+  int x;
+  x = 0;
+  return x;
+}
+
+void main(){
+  int x[10];
+  x[test2] = 5;
+}

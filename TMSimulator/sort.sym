@@ -1,0 +1,37 @@
+Entering the global scope:
+    Entering the scope for function minloc
+        Entering a new block: while
+                Entering a new block: if
+            Leaving the block if
+        Leaving the block
+        a[null]: INT
+        high: INT
+        low: INT
+        x: INT
+        i: INT
+        k: INT
+    Leaving the function
+    Entering the scope for function sort
+        Entering a new block: while
+            t: INT
+        Leaving the block
+        a[null]: INT
+        high: INT
+        low: INT
+        i: INT
+        k: INT
+    Leaving the function
+    Entering the scope for function main
+        Entering a new block: while
+        Leaving the block
+        Entering a new block: while
+        Leaving the block
+        i: INT
+    Leaving the function
+    output: (INT) -> VOID
+    input: () -> INT
+    minloc: (INT[], INT, INT) -> INT
+    x[10]: INT
+    main: () -> VOID
+    sort: (INT[], INT, INT) -> VOID
+Leaving the global scope

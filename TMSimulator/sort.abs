@@ -1,0 +1,167 @@
+ArrayDec: x size of 10 , of type INT
+FunctionDec: minloc0
+    NameTy: type INT 1
+    ArrayDec: a size of 0 , of type INT
+    SimpleDec: low, type INT
+    SimpleDec: high, type INT
+    CompoundExp:
+        SimpleDec: i, type INT
+        SimpleDec: x, type INT
+        SimpleDec: k, type INT
+        AssignExp:
+            SimpleVar: k
+            VarExp: 
+                SimpleVar: low
+        AssignExp:
+            SimpleVar: x
+            VarExp: 
+                IndexVar: a
+                    VarExp: 
+                        SimpleVar: low
+        AssignExp:
+            SimpleVar: i
+            OpExp: + 
+                VarExp: 
+                    SimpleVar: low
+                IntExp: 1
+        WhileExp:
+            OpExp: < 
+                VarExp: 
+                    SimpleVar: i
+                VarExp: 
+                    SimpleVar: high
+            CompoundExp:
+                IfExp:
+                    OpExp: < 
+                        VarExp: 
+                            IndexVar: a
+                                VarExp: 
+                                    SimpleVar: i
+                        VarExp: 
+                            SimpleVar: x
+                    CompoundExp:
+                        AssignExp:
+                            SimpleVar: x
+                            VarExp: 
+                                IndexVar: a
+                                    VarExp: 
+                                        SimpleVar: i
+                        AssignExp:
+                            SimpleVar: k
+                            VarExp: 
+                                SimpleVar: i
+                AssignExp:
+                    SimpleVar: i
+                    OpExp: + 
+                        VarExp: 
+                            SimpleVar: i
+                        IntExp: 1
+        ReturnExp: 
+            VarExp: 
+                SimpleVar: k
+FunctionDec: sort0
+    NameTy: type VOID 1
+    ArrayDec: a size of 0 , of type INT
+    SimpleDec: low, type INT
+    SimpleDec: high, type INT
+    CompoundExp:
+        SimpleDec: i, type INT
+        SimpleDec: k, type INT
+        AssignExp:
+            SimpleVar: i
+            VarExp: 
+                SimpleVar: low
+        WhileExp:
+            OpExp: < 
+                VarExp: 
+                    SimpleVar: i
+                OpExp: - 
+                    VarExp: 
+                        SimpleVar: high
+                    IntExp: 1
+            CompoundExp:
+                SimpleDec: t, type INT
+                AssignExp:
+                    SimpleVar: k
+                    CallExp: minloc
+                        VarExp: 
+                            SimpleVar: a
+                        VarExp: 
+                            SimpleVar: i
+                        VarExp: 
+                            SimpleVar: high
+                AssignExp:
+                    SimpleVar: t
+                    VarExp: 
+                        IndexVar: a
+                            VarExp: 
+                                SimpleVar: k
+                AssignExp:
+                    IndexVar: a
+                        VarExp: 
+                            SimpleVar: k
+                    VarExp: 
+                        IndexVar: a
+                            VarExp: 
+                                SimpleVar: i
+                AssignExp:
+                    IndexVar: a
+                        VarExp: 
+                            SimpleVar: i
+                    VarExp: 
+                        SimpleVar: t
+                AssignExp:
+                    SimpleVar: i
+                    OpExp: + 
+                        VarExp: 
+                            SimpleVar: i
+                        IntExp: 1
+FunctionDec: main0
+    NameTy: type VOID 1
+    CompoundExp:
+        SimpleDec: i, type INT
+        AssignExp:
+            SimpleVar: i
+            IntExp: 0
+        WhileExp:
+            OpExp: < 
+                VarExp: 
+                    SimpleVar: i
+                IntExp: 10
+            CompoundExp:
+                AssignExp:
+                    IndexVar: x
+                        VarExp: 
+                            SimpleVar: i
+                    CallExp: input
+                AssignExp:
+                    SimpleVar: i
+                    OpExp: + 
+                        VarExp: 
+                            SimpleVar: i
+                        IntExp: 1
+        CallExp: sort
+            VarExp: 
+                SimpleVar: x
+            IntExp: 0
+            IntExp: 10
+        AssignExp:
+            SimpleVar: i
+            IntExp: 0
+        WhileExp:
+            OpExp: < 
+                VarExp: 
+                    SimpleVar: i
+                IntExp: 10
+            CompoundExp:
+                CallExp: output
+                    VarExp: 
+                        IndexVar: x
+                            VarExp: 
+                                SimpleVar: i
+                AssignExp:
+                    SimpleVar: i
+                    OpExp: + 
+                        VarExp: 
+                            SimpleVar: i
+                        IntExp: 1

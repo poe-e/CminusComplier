@@ -1,0 +1,77 @@
+/* 
+  Invalid global declaration, line 18
+  Invalid while loop line 31
+  Void function expects no return
+  Array a is undefined line 17
+  Assigning void variable i numbers
+  VOID i used in while expression
+  VOID i used in if expression
+  Incompatible types, int k = void i
+  Index variable void l invalid
+  Function sort redefinition line 
+  Function minloc call, expects 3 arguments, got 0
+  Sort expects int array but got int
+  IndexVar q is undefined
+  IndexVar void function is invalid
+  Using a void function in a whileExp
+  Using void function in an expression
+*/
+int x[$];
+
+void function(){
+  int i;
+  i = 0;
+  return i;
+}
+int minloc(int min[], int low, int high) {
+  void i; int x; int k;
+  k = low;
+  x = a[low];
+  i = low + 1;
+  while (i . high) {
+    if (i < x) {
+       k = i; 
+    }
+  } 
+  return k;
+}
+
+void sort(int sor[], int low, int high) {
+  void l; int i; int k;
+  i = low;
+  sor[l] = 0;
+  while (i < high - 1) {
+    int t;
+    k = minloc(i, i, high);
+    i = i + 1;
+  }
+  while( function() < 10){
+    i = 1 + 1;
+  }
+  while(function()){
+    i = 1+1;
+  }
+}
+
+void sort(){
+  int y;
+}
+
+void main(void) {
+  int i; void x; int arr[10];
+  i = 0;
+  while (i < 10) {
+    x[i] = input();
+    i = i + 1;
+  }
+
+  minloc();
+
+  i = 0;
+  while (i < 10) {
+    output(x[i]);
+    i = i + 1;
+  }
+  arr[q] = 0;
+  arr[main()] = 0;
+}

@@ -1,0 +1,30 @@
+/*
+    This is the Fibonacci series using recusion
+    Input a number to print that amount of numbers in the fib series
+*/
+
+
+int fibonacci_series(int num){
+    if(num == 0){
+        return 0;
+    }
+    if(num == 1){
+        return 1;
+    }
+    return (fibonacci_series(num-1) + fibonacci_series(num-2));
+}
+
+void main(){
+    int count; int c; int i; int print;
+
+    c = 0;
+    i = 1;
+    count = input();
+
+    while(i <= count){
+
+        output(fibonacci_series(c));
+        c = c+1;
+        i = i+1;
+    }
+}

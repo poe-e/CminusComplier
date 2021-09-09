@@ -1,0 +1,16 @@
+Entering the global scope:
+    Entering the scope for function gcd
+        Entering a new block: if
+        Leaving the block if
+        u: INT
+        v: INT
+    Leaving the function
+    Entering the scope for function main
+        x: INT
+    Leaving the function
+    output: (INT) -> VOID
+    input: () -> INT
+    y: INT
+    gcd: (INT, INT) -> INT
+    main: () -> VOID
+Leaving the global scope

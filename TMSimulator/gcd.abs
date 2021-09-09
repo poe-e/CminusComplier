@@ -1,0 +1,45 @@
+SimpleDec: y, type INT
+FunctionDec: gcd0
+    NameTy: type INT 1
+    SimpleDec: u, type INT
+    SimpleDec: v, type INT
+    CompoundExp:
+        IfExp:
+            OpExp: == 
+                VarExp: 
+                    SimpleVar: v
+                IntExp: 0
+            ReturnExp: 
+                VarExp: 
+                    SimpleVar: u
+            ReturnExp: 
+                CallExp: gcd
+                    VarExp: 
+                        SimpleVar: v
+                    OpExp: - 
+                        VarExp: 
+                            SimpleVar: u
+                        OpExp: * 
+                            OpExp: / 
+                                VarExp: 
+                                    SimpleVar: u
+                                VarExp: 
+                                    SimpleVar: v
+                            VarExp: 
+                                SimpleVar: v
+FunctionDec: main0
+    NameTy: type VOID 1
+    CompoundExp:
+        SimpleDec: x, type INT
+        AssignExp:
+            SimpleVar: x
+            CallExp: input
+        AssignExp:
+            SimpleVar: y
+            IntExp: 10
+        CallExp: output
+            CallExp: gcd
+                VarExp: 
+                    SimpleVar: x
+                VarExp: 
+                    SimpleVar: y

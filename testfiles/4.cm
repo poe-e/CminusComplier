@@ -1,0 +1,37 @@
+/*
+    Takes in 5 number of input to an array, calls a function that returns
+    the max element in the array.
+*/
+
+
+int array[5];
+
+
+int largest_element(int arr[], int num){
+    int i; int max;
+    i = 0;
+
+    max = arr[0];
+
+    while(i < num){
+        if(arr[i] > max){
+            max = arr[i];
+        }
+        i = i + 1;
+    }
+    return max;
+}
+
+void main(){
+    int length; int i; int maxNum;
+    length = 5;
+
+    i = 0;
+    while (i < 5) {
+        array[i] = input();
+        i = i + 1;
+    }
+
+    maxNum = largest_element(array, length);
+    output(maxNum);
+}

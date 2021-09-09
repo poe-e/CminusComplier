@@ -1,0 +1,29 @@
+/*
+    This program takes the input of three numbers and prints 
+    the greatest number between them
+    Shows input/output, if statements, nested if statements
+*/
+
+void main(){
+    int num1; int num2; int num3;
+
+    num1 = input();
+    num2 = input();
+    num3 = input();
+
+    if(num1 > num2){
+        if(num1 > num3){
+            output(num1);
+        }
+    }
+    if(num2 > num1){
+        if(num2 > num3){
+            output(num2);
+        }
+    }
+    if(num3 > num1){
+        if(num3 > num2){
+            output(num3);
+        }
+    }
+}

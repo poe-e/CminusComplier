@@ -1,0 +1,46 @@
+int x[10];
+
+int minloc(int a[], int low, int high) {
+  int i; int x; int k;
+  k = low;
+  x = a[low]; /*load id value , load value at array index*/
+  i = low + 1;
+  while (i < high) {
+    if (a[i] < x) { /*load id value , load value at array index*/
+       x = a[i];/*load id value , load value at array index*/
+       k = i; 
+    }
+    i = i + 1;
+  } 
+  return k;
+}
+/*right hand side you load value at array index*/
+void sort(int a[], int low, int high) {
+  int i; int k;
+  i = low;
+  while (i < high - 1) {
+    int t;
+    k = minloc(a, i, high);
+    t = a[k]; /* load id value, load value at array index*/
+    a[k] = a[i];/*first: load value, second: load id value, load value at array index*/
+    a[i] = t;/* load id value*/
+    i = i + 1;
+  }
+}
+
+void main(void) {
+  int i;
+  i = 0;
+  while (i < 10) {
+    x[i] = input(); /*load id address*/
+    i = i + 1;
+  }
+
+  sort(x, 0, 10);
+
+  i = 0;
+  while (i < 10) {
+    output(x[i]); /*load id address,load value at array index*/
+    i = i + 1;
+  }
+}

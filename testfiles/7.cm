@@ -1,0 +1,13 @@
+/**
+  Undefined variable z
+  Invalid Void variable in OPEXP
+  Incompatible types, assigning numbers to void variable
+**/
+
+void main(void) {
+  int x; int y; void k;
+  z = input();
+  y = input();
+  x = k + 1;
+  k = 1 + 2;
+}

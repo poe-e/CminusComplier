@@ -1,0 +1,18 @@
+FunctionDec: main0
+    NameTy: type VOID 1
+    CompoundExp:
+        ArrayDec: x size of 2 , of type INT
+        AssignExp:
+            IndexVar: x
+                IntExp: 0
+            IntExp: 2
+        AssignExp:
+            IndexVar: x
+                OpExp: - 
+                    IntExp: 0
+                    IntExp: 2
+            OpExp: + 
+                VarExp: 
+                    IndexVar: x
+                        IntExp: 0
+                IntExp: 5

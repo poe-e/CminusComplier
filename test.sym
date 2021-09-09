@@ -1,0 +1,8 @@
+Entering the global scope:
+    Entering the scope for function main
+        x[2]: INT
+    Leaving the function
+    output: (INT) -> VOID
+    input: () -> INT
+    main: () -> VOID
+Leaving the global scope

@@ -1,0 +1,12 @@
+/*
+    ERRORS:
+        missing semi colon line 10
+        undeclared variable line 11
+        undefined function line 11
+*/
+
+
+void main(){
+    int i
+    len = randomFunction();
+}

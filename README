@@ -1,0 +1,154 @@
+A JFlex+Cup implementation for the Tiny language.
+
+  Note that you need to modify the paths for CLASSPATH, JFLEX, and CUP in 
+the Makefile so that the related commands can be found on your particular 
+machine.  For example, the given settings are for the Linux server and the 
+commented settings are for my macbook.
+
+  To build the parser, type "make" in the current directory, which will 
+generate an executable program called "Main".
+
+  To test source code like "fac.tiny", type 
+
+    "java -classpath /usr/share/java/cup.jar:. Main fac.tiny" 
+    "java -classpath D:\Programs\cup-1.01\bin\cup.bat;. Main fac.tiny"
+    This is for windows: java -cp "D:\Programs\cup-1.01\lib\*;." CM test.cm
+
+and the syntax tree will be displayed on the screen.
+
+  To rebuild the parser, type "make clean" and type "make" again.
+
+  Also note that all the abstract syntax tree structures are defined under
+the directory "absyn" and the methods for showing a syntax tree is implemented
+by the visitor pattern in "ShowTreeVisitor.java".  Since some java files are 
+generated automatically, they may contain variables that are not used, which 
+are safe to ignore in the compilation process.
+
+Makefile for linux:
+      JAVA=JAVA
+      JAVAC=JAVAC
+      JFLEX=jflex
+      CLASSPATH=-cp /usr/share/java/cup.jar:.
+      CUP=cup
+
+      all: CM.class
+
+      CM.class: absyn/*.java parser.java sym.java Lexer.java ShowTreeVisitor.java NodeType.java SemanticAnalyzer.java Scanner.java CM.java
+
+      %.class: %.java
+        $(JAVAC) $(CLASSPATH) $^
+
+      Lexer.java: tiny.flex
+        $(JFLEX) tiny.flex
+
+      parser.java: tiny.cup
+        #$(CUP) -dump -expect 3 tiny.cup
+        $(CUP) -expect 3 tiny.cup
+
+      clean:
+        rm -f parser.java Lexer.java sym.java *.class absyn/*.class *~
+
+
+Paul Wasilewicz
+1007938
+CIS*4650
+Checkpoint 1
+
+I used the sample parser for the tiny language as a starting point provided by Fei Song.
+
+To compiler type 'make'
+To run: java -classpath /usr/share/java/cup.jar:. Main testfile.cm
+To run on windows: java -cp "D:\Programs\cup-1.01\lib\*;." CM fac.tiny
+
+ERROR recovery 
+  Semi colons
+  Tried to do () errors but it just interfered with the ; error grammar
+  Invalid if statement checks
+  Invalid while loop checks
+  Invalid function declaration type
+  Invalid global variable declaration, parameter variable declaration checks
+  Local variable declaration(gave me issues, if the second variable is invalid it works but if its the first, same with arrays)
+  Invalid syntax in arg list
+
+Errors:
+  invalid array declaration
+  invalid variable declaration
+  invalid array variable declaration
+  semi colons
+  invalid function declaration
+  invalid function parameter list
+  invalid declaration in parameter
+  invalid while loop condition
+  invalid if statement
+  invalid if else statement
+  invalid arg list
+
+
+Paul Wasilewicz
+1007938
+CIS*4650
+Checkpoint 2
+
+To compiler type 'make'
+To run: java -classpath /usr/share/java/cup.jar:. CM test.cm
+To run on windows(my windows computer): java -cp "D:\Programs\cup-1.01\lib\*;." CM test.cm
+
+Testfiles 1-5.cm are in the folder testfiles
+
+Flags: specify at end 
+  ex. java -classpath /usr/share/java/cup.jar:. CM test.cm -a 
+  java -classpath /usr/share/java/cup.jar:. CM test.cm -s
+  -a will write an abstract tree to the input filename.abs
+  -s will write an symbol table tree to the input filename.sym, errors are prints to System.err 
+
+
+SEMANTIC ERRORS
+  FUNCTIONDEC
+    Added redefinition of function check
+  CALLEXP
+    Added calling an undefined function
+    Added calling a function with the wrong number of arguments
+    Added calling a function with wrong argument types ex. int gcd(int x, int y) , int o; void p; z = gcd(o, p) -> p will throw an error
+  SIMPLEVAR
+    Added undefined in while loops
+    Added undefined variables, (doesn't work with undefined global variables, dont know how to do post order for that)
+  ASSIGNEXP
+    Added checks for assigning VOID function to int variables ex. x = output();
+    Added checks for assigning VOID function to int array
+    Added checks for assigning INT function to int array
+    Added checks for assigining to a VOID variable MIGHT HAVE TO TAKE OUT line398
+    Added check for assigning VOID to an INT variable, int x = void y; error
+  OPEXP
+    Added checks for VOID functions in expressions
+    Added checks for VOID functions = 1+2 expressions
+    Added checks for using VOID variables in expressions MIGHT HAVE TO TAKE OUT
+    Works for while loops and if statements
+  RETURNEXP
+    Added check for INT return type and no variable found
+    Added check for INT return type and VOID variable found
+    Added check for returning a VOID variable
+    Added check for VOID function with variable found
+  IndexVar
+    Added check for defined variables
+    Added check for void index variables
+    Added check for void functions used for array index
+  SimpleVar 
+    Added check for defined arrays
+
+Paul Wasilewicz
+1007938
+CIS*4650
+Checkpoint 3
+
+To compiler type 'make'
+To run: java -classpath /usr/share/java/cup.jar:. CM test.cm
+To run on windows(my windows computer): java -cp "D:\Programs\cup-1.01\lib\*;." CM test.cm
+
+Testfiles 0-9.cm are in the folder testfiles
+
+Flags: specify at end 
+  ex. java -classpath /usr/share/java/cup.jar:. CM test.cm -a 
+  java -classpath /usr/share/java/cup.jar:. CM test.cm -s
+  -a will write an abstract tree to the input filename.abs
+  -s will write an symbol table tree to the input filename.sym, errors are prints to System.err 
+  -c will check for semantic and syntatic errors, if none are present then TMSimulator code will be generated and stored in the filename.tm

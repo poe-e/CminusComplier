@@ -1,0 +1,55 @@
+/* 
+    invalid global array declaration, line 11
+    invalid while loop, line 18
+    invalid if statement, line 19
+    missing semi colon on return statement, line 25
+    invalid local variable declaration, line 29
+    invalid array declaration, line 34
+    invalid function declaration, line 41 
+ */
+int x[$]; /* error */
+
+int minloc(int a[], int low, char high) {
+  void i; int x; int k;
+  k = low;
+  x = a[low]
+  i = low + 1;
+  while (i . high) { /* error */
+    if (a[i] " x) { /* error */
+       x = a[i];
+       k = i; 
+    }
+    i = i + 1;
+  } 
+  return k /* error */
+}
+
+void sort(int a[], int low, int high) {
+  int i; char k; /* error */
+  i = low;
+  while (i < high - 1) {
+    int t;
+    k = minloc(a, i, high);
+    t = a[^]; /* error */
+    a[k] = a[i]
+    a[i] = t;
+    i = i + 1;
+  }
+}
+
+char main(void) { /* error */
+  int i;
+  i = 0;
+  while (i < 10) {
+    x[i] = input();
+    i = i + 1;
+  }
+
+  sort(x, 0, 10);
+
+  i = 0;
+  while (i < 10) {
+    output(x[i]);
+    i = i + 1;
+  }
+}
